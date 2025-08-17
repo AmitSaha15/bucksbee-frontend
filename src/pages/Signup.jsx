@@ -2,14 +2,64 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assests";
 import InputField from "../components/InputField";
+import { validateEmail } from "../util/Validation";
+import axiosConfig from "../util/axiosConfig";
+import { API_ENDPOINTS } from "../util/apiEndpoints";
+import toast from "react-hot-toast";
+import { LoaderCircle } from "lucide-react";
 
 const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    // basic checks
+    if (!fullName.trim()) {
+      setError("Please enter your fullname");
+      setIsLoading(false);
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+    if (!password.trim()) {
+      setError("Please enter your password");
+      setIsLoading(false);
+      return;
+    }
+
+    setError("");
+
+    // signup api call
+    try {
+      const response = await axiosConfig.post(API_ENDPOINTS.REGISTER, {
+        fullName,
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        toast.success("Profile created successfully");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Soemething went wrong!", error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="h-screen w-full relative flex items-center justify-center overflow-hidden">
@@ -28,8 +78,10 @@ const Signup = () => {
             Start tracking your transactions with Bucks Bee
           </p>
 
-          <form className="space-y-4">
-            <div className="flex justify-center mb-6"></div>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="flex justify-center mb-6">
+              {/* profile image */}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 value={fullName}
@@ -63,10 +115,20 @@ const Signup = () => {
             )}
 
             <button
-              className="btn-primary w-full py-3 text-lg font-medium"
+              disabled={isLoading}
+              className={`btn-primary w-full py-3 text-lg font-medium flex items-center justify-center gap-2 ${
+                isLoading ? "opacity-60 cursor-not-allowed" : ""
+              }`}
               type="submit"
             >
-              SIGN UP
+              {isLoading ? (
+                <>
+                  <LoaderCircle className="animate-spin w-5 h-5" />
+                  Signing up...
+                </>
+              ) : (
+                "SIGN UP"
+              )}
             </button>
 
             <p className="text-sm text-slate-800 text-center mt-6">
