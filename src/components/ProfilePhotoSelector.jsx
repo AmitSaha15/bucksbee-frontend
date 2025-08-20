@@ -43,7 +43,7 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
 
           <button
             className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full absolute -bottom-1 -right-1"
-            onSubmit={onChooseFile}
+            onClick={onChooseFile}
           >
             <Upload size={15} className="text-purple-500 cursor-pointer" />
           </button>
@@ -59,7 +59,7 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
             className="w-8 h-8 flex items-center justify-center bg-red-800 text-white rounded-full absolute -bottom-1 -right-1"
             onClick={handleRemoveImage}
           >
-            <Trash size={15} />
+            <Trash size={15} className="cursor-pointer" />
           </button>
         </div>
       )}
