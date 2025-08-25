@@ -1,15 +1,22 @@
 import React, { useContext, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
-import { Menu, User, X } from "lucide-react";
+import { LogOutIcon, Menu, User, X } from "lucide-react";
 import { assets } from "../assets/assets";
 
 const NavBar = () => {
   const [openSideMenu, setOpenSideMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  const { user } = useContext(AppContext);
+  const { user, clearUser } = useContext(AppContext);
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear(); // clear the token from localstorage
+    clearUser(); //setUser to null in app context
+    setShowDropdown(false);
+    navigate("/login");
+  };
 
   return (
     <div className="flex items-center justify-between gap-5 bg-white border border-b border-gray-200/50 backdrop-blur-[2px] py-4 px-4 sm:px-7 sticky top-0 z-30">
@@ -67,7 +74,15 @@ const NavBar = () => {
             </div>
 
             {/* dropdown options */}
-            <div className="py-1"></div>
+            <div className="py-1">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+              >
+                <LogOutIcon className="w-4 h-4 text-gray-500" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
