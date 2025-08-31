@@ -1,10 +1,11 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { LogOutIcon, Menu, User, X } from "lucide-react";
 import { assets } from "../assets/assets";
+import SideBar from "./SideBar";
 
-const NavBar = () => {
+const NavBar = ({ activeMenu }) => {
   const [openSideMenu, setOpenSideMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -17,6 +18,22 @@ const NavBar = () => {
     setShowDropdown(false);
     navigate("/login");
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setShowDropdown, showDropdown]);
 
   return (
     <div className="flex items-center justify-between gap-5 bg-white border border-b border-gray-200/50 backdrop-blur-[2px] py-4 px-4 sm:px-7 sticky top-0 z-30">
@@ -52,7 +69,15 @@ const NavBar = () => {
           }}
           className="flex items-center justify-center w-10 h-10 cursor-pointer bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-800 focus:ring-offset-2"
         >
-          <User className="text-purple-500" />
+          {user?.profileImageUrl ? (
+            <img
+              src={user?.profileImageUrl || ""}
+              alt="Profile Image"
+              className="bg-slate-400 h-10 w-10 rounded-full"
+            />
+          ) : (
+            <User className="text-purple-500" />
+          )}
         </button>
 
         {/* dropdown menu */}
@@ -88,6 +113,11 @@ const NavBar = () => {
       </div>
 
       {/* mobile side menu */}
+      {openSideMenu && (
+        <div className="fixed left-0 right-0 bg-white border-b border-gray-200 lg:hidden z-20 top-[73px]">
+          <SideBar activeMenu={activeMenu} />
+        </div>
+      )}
     </div>
   );
 };

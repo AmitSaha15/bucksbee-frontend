@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import Dashboard from "../components/Dashboard";
 
 const Income = () => {
-  return (
-    <div>Income</div>
-  )
-}
+  return <Dashboard activeMenu="Income">Income page</Dashboard>;
+};
 
-export default Income
+export default Income;
